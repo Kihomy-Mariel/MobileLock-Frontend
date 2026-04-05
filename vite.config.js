@@ -7,4 +7,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  preview: {
+    allowedHosts: ['mobilelock-frontend.onrender.com']
+  },
+  server: {
+    allowedHosts: ['mobilelock-frontend.onrender.com']
+  }
 })
