@@ -8,9 +8,9 @@ export default defineConfig({
     tailwindcss(),
   ],
   preview: {
-    allowedHosts: ['mobilelock-frontend.onrender.com']
+    allowedHosts: ['mobilelock-frontend.onrender.com/api']
   },
   server: {
-    allowedHosts: ['mobilelock-frontend.onrender.com']
+    allowedHosts: ['mobilelock-frontend.onrender.com/api']
   }
 })
