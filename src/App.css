@@ -1,0 +1,201 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* =========================
+   ROOT VARIABLES
+========================= */
+
+:root {
+  --background: #050816;
+  --foreground: #f1f5f9;
+
+  --card: #0b1120;
+
+  --primary: #0ea5e9;
+  --secondary: #8b5cf6;
+
+  --border: rgba(255,255,255,0.08);
+
+  --radius: 16px;
+
+  /* gradients */
+
+  --gradient-primary: linear-gradient(
+    135deg,
+    #0ea5e9,
+    #8b5cf6
+  );
+
+  --gradient-glow: linear-gradient(
+    135deg,
+    rgba(14,165,233,0.18),
+    rgba(139,92,246,0.18)
+  );
+
+  /* shadows */
+
+  --shadow-glow: 0 0 40px rgba(14,165,233,0.35);
+  --shadow-card: 0 20px 50px rgba(0,0,0,0.45);
+}
+
+/* =========================
+   BASE STYLES
+========================= */
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+h1,h2,h3,h4 {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.gradient-primary{
+  background: var(--gradient-primary);
+}
+
+.gradient-glow{
+  background: var(--gradient-glow);
+}
+
+.text-gradient{
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shadow-glow{
+  box-shadow: var(--shadow-glow);
+}
+
+.shadow-card{
+  box-shadow: var(--shadow-card);
+}
+
+/* =========================
+   GLASS EFFECT
+========================= */
+
+.glass{
+  background: rgba(15,23,42,0.65);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+}
+
+.glass-light{
+  background: rgba(15,23,42,0.45);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+}
+
+/* =========================
+   HERO CYBER BACKGROUND
+========================= */
+
+.hero-bg{
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+  radial-gradient(
+    circle at 20% 30%,
+    rgba(14,165,233,0.18),
+    transparent 40%
+  ),
+  radial-gradient(
+    circle at 80% 70%,
+    rgba(139,92,246,0.18),
+    transparent 40%
+  );
+
+  z-index:-1;
+}
+
+/* =========================
+   FEATURE CARD
+========================= */
+
+.feature-card{
+  transition: all .25s ease;
+}
+
+.feature-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+
+/* =========================
+   GLOW RING
+========================= */
+
+.glow-ring{
+  box-shadow:
+  0 0 0 1px rgba(14,165,233,0.35),
+  0 0 30px rgba(14,165,233,0.2);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes float{
+  0%{ transform: translateY(0px); }
+  50%{ transform: translateY(-10px); }
+  100%{ transform: translateY(0px); }
+}
+
+.animate-float{
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-ring{
+  0%{
+    transform: scale(.8);
+    opacity:1;
+  }
+
+  100%{
+    transform: scale(2);
+    opacity:0;
+  }
+}
+
+.pulse-ring{
+  animation: pulse-ring 2s infinite;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+  width:6px;
+}
+
+::-webkit-scrollbar-track{
+  background:#070b1a;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#1e293b;
+  border-radius:4px;
+}
