@@ -1,0 +1,196 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Smartphone,
+  Trash,
+  Edit2,
+  Plus,
+  Loader2,
+  Check,
+  User,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import useDevices from "../../hooks/useDevices";
+import toast, { Toaster } from "react-hot-toast";
+
+// Componente InputField reutilizable
+const InputField = ({ label, value, onChange, required }) => (
+  <div className="flex flex-col">
+    <label className="text-white/80 mb-1">{label}</label>
+    <input
+      value={value}
+      onChange={onChange}
+      required={required}
+      className="w-full px-5 py-3 rounded-2xl border border-white/20 bg-[#1c1c2a] text-white focus:ring-2 focus:ring-cyan-500 outline-none transition"
+    />
+  </div>
+);
+
+export default function DevicesPage() {
+  const navigate = useNavigate();
+  const { devices, loading, createDevice, updateDevice, deleteDevice } = useDevices();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingDevice, setEditingDevice] = useState(null);
+  const [formData, setFormData] = useState({ marca_modelo: "", hash_imei: "", hash_adn_hardware: "" });
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const openModal = (device = null) => {
+    setEditingDevice(device);
+    setFormData(device ? { ...device } : { marca_modelo: "", hash_imei: "", hash_adn_hardware: "" });
+    setModalOpen(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+
+    try {
+      if (editingDevice) {
+        await toast.promise(
+          updateDevice(editingDevice.id_dispositivo, formData),
+          { loading: "Actualizando...", success: "Dispositivo actualizado ✅", error: "Error al actualizar" }
+        );
+      } else {
+        await toast.promise(
+          createDevice(formData),
+          { loading: "Registrando...", success: "Dispositivo registrado ✅", error: "Error al registrar" }
+        );
+      }
+      setModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDelete = async (device) => {
+    if (!confirm(`¿Eliminar dispositivo "${device.marca_modelo}"?`)) return;
+    setActionLoading(true);
+    try {
+      await toast.promise(
+        deleteDevice(device.id_dispositivo),
+        { loading: "Eliminando...", success: "Dispositivo eliminado ✅", error: "Error al eliminar" }
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen pb-24 px-10 pt-10 max-w-5xl mx-auto bg-gradient-to-b from-[#0a0a14] to-[#1a1a2f]">
+      <Toaster position="top-right" />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-14 h-14 rounded-2xl bg-[#111122] flex items-center justify-center shadow-lg hover:scale-105 transition"
+        >
+          <ArrowLeft size={24} className="text-cyan-400" />
+        </button>
+        <h1 className="text-3xl font-bold text-white tracking-wide">Mis Dispositivos</h1>
+        <button
+          onClick={() => navigate("/profile")}
+          className="w-14 h-14 rounded-2xl bg-[#111122] flex items-center justify-center shadow-lg hover:scale-105 transition"
+        >
+          <User size={24} className="text-purple-400" />
+        </button>
+      </div>
+
+      {/* Registrar Device */}
+      <button
+        onClick={() => openModal()}
+        className="flex items-center gap-3 bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-2xl shadow-xl mb-8 text-lg font-semibold transition transform hover:scale-105"
+      >
+        <Plus size={24} /> Registrar dispositivo
+      </button>
+
+      {/* Devices List */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center text-white py-20 gap-4 text-xl">
+          <Loader2 className="animate-spin" size={36} />
+          Cargando dispositivos...
+        </div>
+      ) : devices.length === 0 ? (
+        <p className="text-white/60 text-center py-20 text-2xl">No hay dispositivos registrados.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {devices.map((device) => (
+            <motion.div
+              key={device.id_dispositivo}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#111122] rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between shadow-xl hover:scale-105 transition"
+            >
+              <div className="flex items-center gap-5 mb-4 md:mb-0">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+                  <Smartphone size={28} />
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-white">{device.marca_modelo}</p>
+                  <p className="text-sm text-white/70">IMEI: {device.hash_imei}</p>
+                  <p className="text-sm text-white/70">Hardware: {device.hash_adn_hardware}</p>
+                </div>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <button
+                  onClick={() => openModal(device)}
+                  className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl transition text-lg"
+                >
+                  <Edit2 size={18} /> Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(device)}
+                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition text-lg"
+                >
+                  <Trash size={18} /> Eliminar
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#1c1c2a] rounded-3xl p-8 w-full max-w-2xl shadow-2xl"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-white">
+              {editingDevice ? "Editar dispositivo" : "Registrar dispositivo"}
+            </h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <InputField label="Marca y modelo" value={formData.marca_modelo} onChange={e => setFormData({...formData, marca_modelo: e.target.value})} required />
+              <InputField label="IMEI" value={formData.hash_imei} onChange={e => setFormData({...formData, hash_imei: e.target.value})} required />
+              <InputField label="Hardware ID" value={formData.hash_adn_hardware} onChange={e => setFormData({...formData, hash_adn_hardware: e.target.value})} required />
+
+              <div className="flex gap-6 mt-4 flex-wrap">
+                <button type="submit" className="flex-1 flex items-center justify-center gap-3 bg-cyan-500 hover:bg-cyan-600 text-white py-4 rounded-2xl shadow-lg text-xl font-semibold transition">
+                  {actionLoading ? <Loader2 className="animate-spin" size={24} /> : <Check size={24} />}
+                  {editingDevice ? "Actualizar" : "Registrar"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-4 rounded-2xl text-xl font-semibold transition"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+    </div>
+  );
+}
