@@ -1,125 +1,301 @@
-import { useAuth } from "../../context/AuthContext"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { UserCircle2, Mail, ShieldCheck, LogOut, ArrowLeft } from "lucide-react"
+import {
+    UserCircle2,
+    Mail,
+    ShieldCheck,
+    LogOut,
+    ArrowLeft,
+    Save,
+    Pencil,
+    X,
+    Loader2
+} from "lucide-react"
+
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
 import BottomNav from "../../components/navigation/BottomNav"
+import useProfile from "../../hooks/useProfile"
 
 export function ProfilePage() {
 
-    const { user, logout } = useAuth()
     const navigate = useNavigate()
+    const { logout } = useAuth()
 
-    const fullName = [
-        user?.nombres,
-        user?.apellido_paterno,
-        user?.apellido_materno
-    ].filter(Boolean).join(" ")
+    const { profile, loading, saveProfile, saving } = useProfile()
 
-    const profileName = fullName || "Tu cuenta"
-    const profileEmail = user?.correo_electronico || "No disponible"
-    const profilePlan = user?.plan_suscripcion || "FREE"
+    const [editing, setEditing] = useState(false)
+    const [loggingOut, setLoggingOut] = useState(false)
 
-    const handleLogout = async () => {
-        await logout()
-        navigate("/")
+    const [formData, setFormData] = useState({
+        nombres: "",
+        apellido_paterno: "",
+        apellido_materno: "",
+    })
+
+    useEffect(() => {
+        if (profile) {
+            setFormData({
+                nombres: profile.nombres || "",
+                apellido_paterno: profile.apellido_paterno || "",
+                apellido_materno: profile.apellido_materno || "",
+            })
+        }
+    }, [profile])
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
     }
 
-    return (
-        <div className="min-h-screen flex flex-col relative overflow-hidden hero-bg">
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[60%] bg-cyan-500/10 blur-3xl rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 blur-3xl rounded-full" />
-            </div>
+    const handleSave = async () => {
+        await saveProfile(formData)
+        setEditing(false)
+    }
 
-            <main className="relative z-10 flex-1 px-6 pt-8 pb-24 max-w-4xl mx-auto w-full">
+    const handleLogout = async () => {
+        setLoggingOut(true)
+
+        try {
+            await logout()
+            navigate("/")
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoggingOut(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+                Cargando perfil...
+            </div>
+        )
+    }
+
+    const fullName = [
+        profile?.nombres,
+        profile?.apellido_paterno,
+        profile?.apellido_materno
+    ].filter(Boolean).join(" ")
+
+    return (
+        <div className="min-h-screen flex flex-col hero-bg">
+
+            <main className="flex-1 px-6 pt-8 pb-24 max-w-3xl mx-auto w-full">
+
                 <motion.section
-                    initial={{ opacity: 0, y: 22 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55 }}
-                    className="glass rounded-3xl p-6 md:p-8 shadow-card"
+                    transition={{ duration: 0.4 }}
+                    className="glass rounded-3xl p-8 shadow-card backdrop-blur-xl"
                 >
-                    <div className="flex items-center justify-between gap-4 mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                                <UserCircle2 size={24} />
+
+                    {/* HEADER */}
+                    <div className="flex justify-between items-center mb-8">
+
+                        <button
+                            onClick={() => navigate("/dashboard")}
+                            className="flex items-center gap-2 text-sm glass-light px-4 py-2 rounded-xl hover:scale-105 transition"
+                        >
+                            <ArrowLeft size={16}/>
+                            Volver
+                        </button>
+
+                        {!editing && (
+                            <button
+                                onClick={() => setEditing(true)}
+                                className="flex items-center gap-2 text-sm gradient-primary px-5 py-2 rounded-xl hover:scale-105 transition"
+                            >
+                                <Pencil size={16}/>
+                                Editar perfil
+                            </button>
+                        )}
+
+                    </div>
+
+
+                    {/* PROFILE HEADER */}
+                    <div className="flex flex-col items-center text-center mb-8">
+
+                        <div className="relative">
+
+                            <div className="w-28 h-28 rounded-full gradient-primary flex items-center justify-center shadow-glow">
+                                <UserCircle2 size={54}/>
                             </div>
 
-                            <div>
-                                <p className="text-xs text-muted-foreground">MobileLock AI</p>
-                                <h1 className="text-2xl md:text-3xl font-bold">Mi perfil</h1>
+                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs px-3 py-1 rounded-full glass-light">
+                                {profile.plan_suscripcion}
+                            </div>
+
+                        </div>
+
+                        <h2 className="text-2xl font-bold mt-4">
+                            {fullName || "Usuario"}
+                        </h2>
+
+                        <p className="text-muted-foreground text-sm flex items-center gap-2 mt-1">
+                            <Mail size={14}/>
+                            {profile.correo_electronico}
+                        </p>
+
+                    </div>
+
+
+                    {/* PLAN CARD */}
+                    <div className="glass-light rounded-2xl p-4 flex items-center gap-4 mb-8">
+
+                        <div className="p-2 rounded-xl bg-cyan-500/10">
+                            <ShieldCheck className="text-cyan-400"/>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-muted-foreground">
+                                Estado del plan
+                            </p>
+
+                            <p className="font-semibold">
+                                {profile.plan_suscripcion} • {profile.plan_estado}
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    {/* FORM */}
+                    <div className="grid md:grid-cols-2 gap-5">
+
+                        <Field
+                            label="Nombres"
+                            name="nombres"
+                            value={formData.nombres}
+                            editing={editing}
+                            onChange={handleChange}
+                        />
+
+                        <Field
+                            label="Apellido paterno"
+                            name="apellido_paterno"
+                            value={formData.apellido_paterno}
+                            editing={editing}
+                            onChange={handleChange}
+                        />
+
+                        <Field
+                            label="Apellido materno"
+                            name="apellido_materno"
+                            value={formData.apellido_materno}
+                            editing={editing}
+                            onChange={handleChange}
+                        />
+
+                        <div>
+                            <label className="text-xs text-muted-foreground">
+                                Correo electrónico
+                            </label>
+
+                            <div className="mt-1 flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 text-sm opacity-80">
+                                <Mail size={14}/>
+                                {profile.correo_electronico}
                             </div>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={() => navigate("/dashboard")}
-                            className="px-4 py-2 rounded-xl glass-light glow-ring flex items-center gap-2 text-sm"
-                        >
-                            <ArrowLeft size={16} />
-                            Volver
-                        </button>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4 mb-6">
-                        <motion.article
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1, duration: 0.35 }}
-                            className="glass-light rounded-2xl p-4"
-                        >
-                            <p className="text-xs text-muted-foreground mb-1">Usuario</p>
-                            <p className="text-lg font-semibold">{profileName}</p>
-                        </motion.article>
 
-                        <motion.article
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.18, duration: 0.35 }}
-                            className="glass-light rounded-2xl p-4 flex items-start gap-3"
-                        >
-                            <Mail size={18} className="text-cyan-400 mt-0.5" />
-                            <div>
-                                <p className="text-xs text-muted-foreground mb-1">Correo electrónico</p>
-                                <p className="text-sm md:text-base font-medium break-all">{profileEmail}</p>
-                            </div>
-                        </motion.article>
+                    {/* ACTIONS */}
+                    {editing && (
 
-                        <motion.article
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.26, duration: 0.35 }}
-                            className="glass-light rounded-2xl p-4 flex items-start gap-3 md:col-span-2"
-                        >
-                            <ShieldCheck size={18} className="text-cyan-400 mt-0.5" />
-                            <div>
-                                <p className="text-xs text-muted-foreground mb-1">Plan de seguridad</p>
-                                <p className="text-sm md:text-base font-medium">{profilePlan}</p>
-                            </div>
-                        </motion.article>
-                    </div>
+                        <div className="flex gap-4 mt-8">
 
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <button
-                            type="button"
-                            onClick={() => navigate("/dashboard")}
-                            className="px-6 py-3 rounded-xl gradient-primary font-semibold shadow-glow"
-                        >
-                            Ir al panel
-                        </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="flex items-center gap-2 gradient-primary px-6 py-3 rounded-xl hover:scale-105 transition disabled:opacity-60"
+                            >
+
+                                {saving ? (
+                                    <>
+                                        <Loader2 size={18} className="animate-spin"/>
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save size={18}/>
+                                        Guardar cambios
+                                    </>
+                                )}
+
+                            </button>
+
+                            <button
+                                onClick={() => setEditing(false)}
+                                className="flex items-center gap-2 glass-light px-6 py-3 rounded-xl hover:scale-105 transition"
+                            >
+                                <X size={18}/>
+                                Cancelar
+                            </button>
+
+                        </div>
+
+                    )}
+
+
+                    {/* LOGOUT */}
+                    <div className="mt-10 border-t border-white/10 pt-6">
 
                         <button
-                            type="button"
                             onClick={handleLogout}
-                            className="px-6 py-3 rounded-xl glass-light glow-ring flex items-center justify-center gap-2"
+                            disabled={loggingOut}
+                            className="w-full glass-light py-3 rounded-xl flex items-center justify-center gap-2 text-red-400 hover:bg-red-500/10 transition disabled:opacity-60"
                         >
-                            <LogOut size={18} />
-                            Cerrar sesión
+
+                            {loggingOut ? (
+                                <>
+                                    <Loader2 size={18} className="animate-spin"/>
+                                    Cerrando sesión...
+                                </>
+                            ) : (
+                                <>
+                                    <LogOut size={18}/>
+                                    Cerrar sesión
+                                </>
+                            )}
+
                         </button>
+
                     </div>
+
                 </motion.section>
+
             </main>
 
-            <BottomNav />
+            <BottomNav/>
+
+        </div>
+    )
+}
+
+
+
+function Field({ label, name, value, editing, onChange }) {
+    return (
+        <div>
+            <label className="text-xs text-muted-foreground">
+                {label}
+            </label>
+
+            <input
+                name={name}
+                value={value}
+                disabled={!editing}
+                onChange={onChange}
+                className={`mt-1 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400 outline-none transition text-sm
+                ${!editing && "opacity-70 cursor-not-allowed"}`}
+            />
         </div>
     )
 }

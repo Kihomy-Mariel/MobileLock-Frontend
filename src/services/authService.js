@@ -30,20 +30,11 @@ export const logout = async () => {
 }
 
 export const getProfile = async () => {
-  let lastError = null
+    const res = await apiClient.get("/users/profile/get/")
+    return res.data
+}
 
-  for (const endpoint of PROFILE_ENDPOINTS) {
-    try {
-      const response = await apiClient.get(endpoint)
-      return response.data
-    } catch (error) {
-      if (error.response?.status !== 404) {
-        throw error
-      }
-
-      lastError = error
-    }
-  }
-
-  throw lastError
+export const updateProfile = async (data) => {
+    const res = await apiClient.put("/users/profile/update/", data)
+    return res.data
 }

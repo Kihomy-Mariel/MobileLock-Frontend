@@ -5,6 +5,7 @@ import { LoginPage } from "../pages/Login/LoginPage"
 import DashboardPage from "../pages/Dashboard/DashboardPage"
 import { ProfilePage } from "../pages/Profile/ProfilePage"
 import { RegisterPage } from "../pages/Register/RegisterPage"
+import DevicesPage from "../pages/Device/DevicesPage"
 
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -35,6 +36,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/devices"
+        element={
+          <ProtectedRoute>
+            <DevicesPage />
           </ProtectedRoute>
         }
       />
