@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import { Shield, Fingerprint, Link2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import phone from "../../assets/phone-mobilelockai.png"
+import PricingSection from "../../components/pricing/PricingSection"
 
 const features = [
   { icon: Fingerprint, label: "IA de identificación", desc: "Huella digital única de hardware" },
@@ -115,6 +116,10 @@ export default function WelcomePage() {
           ))}
 
         </div>
+
+
+        {/* PRICING SECTION */}
+        <PricingSection />
 
 
         {/* CTA */}
