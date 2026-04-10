@@ -3,14 +3,11 @@ import { Check, Zap } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { pricingService } from "../../services/pricingService"
-import PaymentModal from "./PaymentModal"
 
 export default function PricingSection() {
   const navigate = useNavigate()
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState(null)
 
   useEffect(() => {
     const loadPlans = async () => {
@@ -27,20 +24,8 @@ export default function PricingSection() {
     loadPlans()
   }, [])
 
-  const handleSelectPlan = (plan) => {
-    if (plan.precio === 0) {
-      // Plan gratuito: ir a registro
-      navigate("/register", { state: { selectedPlanId: plan.id } })
-    } else {
-      // Plan Pro: abrir modal de pago
-      setSelectedPlan(plan)
-      setPaymentModalOpen(true)
-    }
-  }
-
-  const handlePaymentConfirm = (plan) => {
-    // Después del pago exitoso, ir a registro con plan seleccionado
-    navigate("/register", { state: { selectedPlanId: plan.id, planName: plan.nombre } })
+  const handleSelectPlan = (planId) => {
+    navigate("/register", { state: { selectedPlanId: planId } })
   }
 
   if (loading) {
@@ -102,8 +87,7 @@ export default function PricingSection() {
               <div className="mb-8">
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-bold">
-                    {plan.moneda === "Bs" ? "Bs" : "$"}{" "}
-                    {plan.precio.toFixed(2)}
+                    ${plan.precio.toFixed(2)}
                   </span>
                   {plan.precio > 0 && (
                     <span className="text-muted-foreground">/mes</span>
@@ -131,7 +115,7 @@ export default function PricingSection() {
 
               {/* CTA BUTTON */}
               <button
-                onClick={() => handleSelectPlan(plan)}
+                onClick={() => handleSelectPlan(plan.id)}
                 className={`w-full py-3 rounded-xl font-semibold transition ${
                   plan.precio === 0
                     ? "glass-light hover:bg-white/10"
@@ -154,15 +138,6 @@ export default function PricingSection() {
           Sin tarjeta de crédito requerida. Cancela en cualquier momento.
         </motion.p>
       </div>
-
-      {/* PAYMENT MODAL */}
-      <PaymentModal
-        isOpen={paymentModalOpen}
-        onClose={() => setPaymentModalOpen(false)}
-        plan={selectedPlan}
-        onConfirm={handlePaymentConfirm}
-      />
     </section>
   )
 }
-
