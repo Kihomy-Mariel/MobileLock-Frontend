@@ -1,6 +1,5 @@
 import apiClient from "./apiClient"
 const AUTH_BASE_PATH = "/users/auth"
-const PROFILE_ENDPOINTS = ["/users/me/", "/users/users/me/"]
 
 export const register = async (userData) => {
 
@@ -37,4 +36,9 @@ export const getProfile = async () => {
 export const updateProfile = async (data) => {
     const res = await apiClient.put("/users/profile/update/", data)
     return res.data
+}
+
+export const upgradePlan = async (planId) => {
+  const res = await apiClient.post("/users/plan/upgrade/", { plan_id: planId })
+  return res.data
 }

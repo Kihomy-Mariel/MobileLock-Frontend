@@ -38,13 +38,13 @@ const parsePrice = (value) => {
 
 const normalizePlan = (plan, index) => {
   const nombre = plan.nombre ?? plan.nombre_plan ?? `Plan ${index + 1}`
-  const precio =
-    plan.precio ??
-    parsePrice(plan.precio_mensual_formateado) ??
-    0
+  const precioFromApi = Number(plan.precio ?? plan.precio_mensual)
+  const precio = Number.isFinite(precioFromApi) && precioFromApi > 0
+    ? precioFromApi
+    : parsePrice(plan.precio_mensual_formateado)
 
   return {
-    id: plan.id ?? index + 1,
+    id: Number(plan.id ?? index + 1),
     nombre,
     precio,
     moneda: "Bs",

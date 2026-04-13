@@ -2,11 +2,13 @@ import { motion } from "framer-motion"
 import { Mail, Shield, UserRound, LockKeyhole } from "lucide-react"
 import { useState } from "react"
 import { register } from "../../services/authService"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export function RegisterPage() {
 
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const selectedPlanId = state?.selectedPlanId ?? null
 
   const [form, setForm] = useState({
     correo_electronico: "",
@@ -34,7 +36,11 @@ export function RegisterPage() {
 
     try {
 
-      await register(form)
+      const payload = selectedPlanId
+        ? { ...form, plan_id: selectedPlanId }
+        : form
+
+      await register(payload)
       navigate("/login")
 
     } catch (error) {
@@ -76,6 +82,12 @@ export function RegisterPage() {
         <p className="text-sm md:text-base text-muted-foreground mb-6">
           Registra tus datos para proteger y verificar tus dispositivos con seguridad avanzada.
         </p>
+
+        {selectedPlanId && (
+          <p className="text-xs md:text-sm text-cyan-300 mb-5">
+            Plan seleccionado: {selectedPlanId === 2 ? "Pro" : "Gratuito"}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
           <label className="md:col-span-2 text-sm font-medium">Nombre completo</label>

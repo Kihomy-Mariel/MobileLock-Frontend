@@ -128,7 +128,7 @@ export function ProfilePage() {
                             </div>
 
                             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs px-3 py-1 rounded-full glass-light">
-                                {profile.plan_suscripcion}
+                                {profile.plan_nombre || profile.plan_suscripcion}
                             </div>
 
                         </div>
@@ -158,7 +158,10 @@ export function ProfilePage() {
                             </p>
 
                             <p className="font-semibold">
-                                {profile.plan_suscripcion} • {profile.plan_estado}
+                                {(profile.plan_nombre || profile.plan_suscripcion)} • {profile.plan_estado}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Hasta {profile.max_dispositivos_permitidos ?? 1} dispositivo(s)
                             </p>
                         </div>
 
