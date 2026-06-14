@@ -6,6 +6,8 @@ import DashboardPage from "../pages/Dashboard/DashboardPage"
 import { ProfilePage } from "../pages/Profile/ProfilePage"
 import { RegisterPage } from "../pages/Register/RegisterPage"
 import DevicesPage from "../pages/Device/DevicesPage"
+import VerifyPage from "../pages/Verify/VerifyPage"
+import ScanHistoryPage from "../pages/Device/ScanHistoryPage"
 
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -44,6 +46,22 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <DevicesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/verify"
+        element={
+          <ProtectedRoute>
+            <VerifyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <ScanHistoryPage />
           </ProtectedRoute>
         }
       />

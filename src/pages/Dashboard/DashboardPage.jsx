@@ -32,7 +32,7 @@ const quickActions = [
 		title: "Verificar",
 		description: "Confirmar identidad del equipo",
 		icon: BadgeCheck,
-		to: "/devices"
+		to: "/verify"
 	},
 	{
 		title: "Mercado",

@@ -16,5 +16,13 @@ export const deviceRepository = {
 
     async deleteDevice(id) {
         return await deviceService.remove(id)
+    },
+
+    async verifyDevice(params) {
+        return await deviceService.verifyDevice(params)
+    },
+
+    async getScanHistory() {
+        return await deviceService.getScanHistory()
     }
 }

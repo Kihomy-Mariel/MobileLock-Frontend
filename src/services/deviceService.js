@@ -25,5 +25,15 @@ export const deviceService = {
     async remove(id) {
         const res = await apiClient.delete(`/devices/delete/${id}/`)
         return res.data
+    },
+
+    async verifyDevice(params) {
+        const res = await apiClient.get("/devices/verify/", { params })
+        return res.data
+    },
+
+    async getScanHistory() {
+        const res = await apiClient.get("/devices/scan-history/")
+        return res.data
     }
 }
