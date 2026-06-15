@@ -9,42 +9,64 @@ import {
 	Clock3,
 	Smartphone,
 	ArrowUpRight,
-	User
+	User,
+	LogOut,
+	Settings,
+	Sun,
+	Moon
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
+import { useTheme } from "../../context/ThemeContext"
 import BottomNav from "../../components/navigation/BottomNav"
 import useDevices from "../../hooks/useDevices"
+
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const quickActions = [
 	{
 		title: "Escanear",
 		description: "Revisa estado del dispositivo",
 		icon: ScanLine,
-		to: "/devices"
+		to: "/devices",
+		color: "from-[#13e8f3] to-[#3b94c8]"
 	},
 	{
 		title: "Reportar robo",
 		description: "Bloquea tu dispositivo",
 		icon: TriangleAlert,
-		to: "/devices"
+		to: "/devices",
+		color: "from-[#e01aa9] to-[#9138a3]"
 	},
 	{
 		title: "Verificar",
 		description: "Confirmar identidad del equipo",
 		icon: BadgeCheck,
-		to: "/verify"
+		to: "/verify",
+		color: "from-[#a682e8] to-[#655eaf]"
 	},
 	{
 		title: "Mercado",
 		description: "Explorar dispositivos verificados",
 		icon: Store,
-		to: "/market"
+		to: "/market",
+		color: "from-[#13e8f3] to-[#e01aa9]"
 	}
 ]
 
 export default function DashboardPage() {
 
 	const navigate = useNavigate()
+	const { logout, user } = useAuth()
+	const { theme, toggleTheme } = useTheme()
 	const { devices, loading } = useDevices()
 
 	const totalDevices = devices.length
@@ -71,11 +93,11 @@ export default function DashboardPage() {
 		<div className="min-h-screen flex flex-col relative overflow-hidden hero-bg">
 
 			<div className="absolute inset-0 pointer-events-none">
-				<div className="absolute top-[-20%] left-[-20%] w-[70%] h-[60%] bg-cyan-500/10 blur-3xl rounded-full" />
-				<div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 blur-3xl rounded-full" />
+				<div className="absolute top-[-20%] left-[-20%] w-[70%] h-[60%] bg-primary/10 blur-3xl rounded-full" />
+				<div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/10 blur-3xl rounded-full" />
 			</div>
 
-			<main className="relative z-10 flex-1 px-6 pt-8 pb-24 max-w-5xl mx-auto w-full">
+			<main className="relative z-10 flex-1 px-6 pt-8 pb-24 max-w-7xl mx-auto w-full">
 
 				{/* HEADER */}
 				<motion.header
@@ -99,16 +121,45 @@ export default function DashboardPage() {
 							</p>
 						</div>
 						<div className="flex items-center gap-3">
-							<button className="w-11 h-11 rounded-xl glass-light flex items-center justify-center relative">
-								<Bell size={19} className="text-cyan-300" />
+							<button onClick={toggleTheme} className="w-11 h-11 rounded-xl glass-light flex items-center justify-center relative hover:scale-105 transition">
+								{theme === "dark" ? <Sun size={19} className="text-primary" /> : <Moon size={19} className="text-primary" />}
 							</button>
 
-							<button
-								onClick={() => navigate("/profile")}
-								className="w-11 h-11 rounded-full glass-light flex items-center justify-center hover:scale-105 transition"
-							>
-								<User size={20} />
+							<button className="w-11 h-11 rounded-xl glass-light flex items-center justify-center relative hover:scale-105 transition">
+								<Bell size={19} className="text-primary" />
 							</button>
+
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button className="w-11 h-11 rounded-full glass-light flex items-center justify-center hover:scale-105 transition outline-none">
+										<Avatar className="w-9 h-9">
+											<AvatarFallback className="bg-transparent text-foreground">
+												{user?.nombres?.charAt(0) || <User size={18} />}
+											</AvatarFallback>
+										</Avatar>
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-56 glass border-border text-foreground">
+									<DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+									<DropdownMenuSeparator className="bg-white/10" />
+									<DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10" onClick={() => navigate("/profile")}>
+										<User className="mr-2 h-4 w-4" />
+										<span>Perfil</span>
+									</DropdownMenuItem>
+									<DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
+										<Settings className="mr-2 h-4 w-4" />
+										<span>Configuración</span>
+									</DropdownMenuItem>
+									<DropdownMenuSeparator className="bg-white/10" />
+									<DropdownMenuItem className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive" onClick={async () => {
+										await logout();
+										navigate("/");
+									}}>
+										<LogOut className="mr-2 h-4 w-4" />
+										<span>Cerrar sesión</span>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 
 						</div>
 
@@ -153,7 +204,7 @@ export default function DashboardPage() {
 								</div>
 
 								<span className="px-3 py-1 rounded-full glass-light text-xs flex items-center gap-2">
-									<ShieldCheck size={14} className="text-cyan-300" />
+									<ShieldCheck size={14} className="text-primary" />
 									Seguro
 								</span>
 
@@ -226,9 +277,13 @@ export default function DashboardPage() {
 
 					{devices.map(device => (
 
-						<div
+						<motion.div
 							key={device.id}
-							className="glass-light rounded-xl px-4 py-3 mb-2"
+							initial={{ opacity: 0, x: -10 }}
+							animate={{ opacity: 1, x: 0 }}
+							whileHover={{ scale: 1.01, backgroundColor: "rgba(var(--card), 0.06)" }}
+							transition={{ duration: 0.2 }}
+							className="glass-light rounded-xl px-4 py-3 mb-2 cursor-pointer border border-transparent hover:border-primary/30 hover:shadow-glow transition-all"
 						>
 
 							<div className="flex justify-between">
@@ -247,12 +302,12 @@ export default function DashboardPage() {
 
 								<ShieldCheck
 									size={18}
-									className="text-cyan-300"
+									className="text-primary"
 								/>
 
 							</div>
 
-						</div>
+						</motion.div>
 
 					))}
 
@@ -279,12 +334,14 @@ export default function DashboardPage() {
 									onClick={() => navigate(action.to)}
 									initial={{ opacity: 0, y: 18 }}
 									animate={{ opacity: 1, y: 0 }}
-									transition={{ delay: index * 0.1 }}
-									className="glass rounded-2xl p-4 text-left"
+									transition={{ delay: index * 0.1, duration: 0.4 }}
+									whileHover={{ scale: 1.03, y: -4 }}
+									whileTap={{ scale: 0.97 }}
+									className="glass rounded-2xl p-4 text-left transition-all hover:shadow-glow hover:border-primary/50 group cursor-pointer"
 								>
 
-									<span className="w-10 h-10 rounded-xl gradient-glow flex items-center justify-center mb-3">
-										<Icon size={18} />
+									<span className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform bg-gradient-to-br ${action.color} shadow-lg`}>
+										<Icon size={18} className="text-white" />
 									</span>
 
 									<p className="font-semibold">
@@ -324,7 +381,7 @@ export default function DashboardPage() {
 								className="glass-light rounded-xl px-3 py-3 mb-2 flex gap-3"
 							>
 
-								<Clock3 size={16} className="text-cyan-300" />
+								<Clock3 size={16} className="text-primary" />
 
 								<div>
 
