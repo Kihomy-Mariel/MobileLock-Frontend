@@ -29,6 +29,14 @@ export default function useDevices() {
         )
     }
 
+    const reportDeviceState = async (id_dispositivo, estado) => {
+        const updated = await deviceRepository.reportDeviceState(id_dispositivo, estado)
+        setDevices(prev =>
+            prev.map(d => d.id_dispositivo === id_dispositivo ? updated : d)
+        )
+        return updated
+    }
+
     const deleteDevice = async (id_dispositivo) => {
         await deviceRepository.deleteDevice(id_dispositivo)
         setDevices(prev => prev.filter(d => d.id_dispositivo !== id_dispositivo))
@@ -43,6 +51,7 @@ export default function useDevices() {
         loading,
         createDevice,
         updateDevice,
+        reportDeviceState,
         deleteDevice
     }
 }

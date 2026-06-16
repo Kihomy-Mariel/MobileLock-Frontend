@@ -139,6 +139,12 @@ export default function ScanHistoryPage() {
                     Robado
                   </span>
                 )}
+                {scan.resultado_estado === "EXTRAVIADO" && (
+                  <span className="flex items-center gap-1.5 px-4 py-2 bg-amber-500/10 border border-amber-500/30 text-amber-500 text-xs font-bold rounded-xl uppercase shadow-inner">
+                    <ShieldAlert size={14} />
+                    Extraviado
+                  </span>
+                )}
                 {scan.resultado_estado === "NO_REGISTRADO" && (
                   <span className="flex items-center gap-1.5 px-4 py-2 bg-gray-500/10 border border-gray-500/30 text-gray-400 text-xs font-bold rounded-xl uppercase">
                     <HelpCircle size={14} />

@@ -14,12 +14,20 @@ export const deviceRepository = {
         return await deviceService.update(id, device)
     },
 
+    async reportDeviceState(id, estado) {
+        return await deviceService.reportState(id, estado)
+    },
+
     async deleteDevice(id) {
         return await deviceService.remove(id)
     },
 
     async verifyDevice(params) {
         return await deviceService.verifyDevice(params)
+    },
+
+    async verifyDevicePhysical(data) {
+        return await deviceService.verifyDevicePhysical(data)
     },
 
     async getScanHistory() {

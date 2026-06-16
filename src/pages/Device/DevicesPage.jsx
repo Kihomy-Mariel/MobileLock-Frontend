@@ -10,6 +10,7 @@ import {
   Loader2,
   Check,
   User,
+  ShieldAlert,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useDevices from "../../hooks/useDevices";
@@ -30,16 +31,35 @@ const InputField = ({ label, value, onChange, required }) => (
 
 export default function DevicesPage() {
   const navigate = useNavigate();
-  const { devices, loading, createDevice, updateDevice, deleteDevice } = useDevices();
+  const { devices, loading, createDevice, updateDevice, reportDeviceState, deleteDevice } = useDevices();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [reportingDevice, setReportingDevice] = useState(null);
   const [editingDevice, setEditingDevice] = useState(null);
   const [formData, setFormData] = useState({ marca_modelo: "", hash_imei: "", hash_adn_hardware: "" });
   const [actionLoading, setActionLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+
+  const onReportStateSubmit = async (id, statusVal) => {
+    try {
+      setReportingDevice(null);
+      await toast.promise(
+        reportDeviceState(id, statusVal),
+        {
+          loading: "Actualizando estado...",
+          success: "Estado de seguridad actualizado ✅",
+          error: "Error al actualizar estado"
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const openModal = (device = null) => {
     setEditingDevice(device);
     setFormData(device ? { ...device } : { marca_modelo: "", hash_imei: "", hash_adn_hardware: "" });
+    setImageFile(null);
     setModalOpen(true);
   };
 
@@ -47,15 +67,23 @@ export default function DevicesPage() {
     e.preventDefault();
     setActionLoading(true);
 
+    const data = new FormData();
+    data.append("marca_modelo", formData.marca_modelo);
+    data.append("hash_imei", formData.hash_imei);
+    data.append("hash_adn_hardware", formData.hash_adn_hardware);
+    if (imageFile) {
+      data.append("url_imagen_referencia", imageFile);
+    }
+
     try {
       if (editingDevice) {
         await toast.promise(
-          updateDevice(editingDevice.id_dispositivo, formData),
+          updateDevice(editingDevice.id_dispositivo, data),
           { loading: "Actualizando...", success: "Dispositivo actualizado ✅", error: "Error al actualizar" }
         );
       } else {
         await toast.promise(
-          createDevice(formData),
+          createDevice(data),
           { loading: "Registrando...", success: "Dispositivo registrado ✅", error: "Error al registrar" }
         );
       }
@@ -133,9 +161,25 @@ export default function DevicesPage() {
                   <Smartphone size={28} />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-white">{device.marca_modelo}</p>
+                  <p className="text-xl font-bold text-white flex items-center gap-2 flex-wrap">
+                    {device.marca_modelo}
+                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${device.estado === "LIBRE" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+                        device.estado === "ROBADO" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
+                          "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                      }`}>
+                      {device.estado === "LIBRE" ? "Seguro" : device.estado === "ROBADO" ? "Robado" : "Extraviado"}
+                    </span>
+                  </p>
                   <p className="text-sm text-white/70">IMEI: {device.hash_imei}</p>
                   <p className="text-sm text-white/70">Hardware: {device.hash_adn_hardware}</p>
+                  <div className="mt-2 flex gap-2">
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${device.hash_visual
+                        ? "bg-teal-500/10 text-teal-400 border border-teal-500/20"
+                        : "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+                      }`}>
+                      {device.hash_visual ? "Huella registrada ✅" : "Sin huella ⚠️"}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-3 flex-wrap">
@@ -169,9 +213,19 @@ export default function DevicesPage() {
               {editingDevice ? "Editar dispositivo" : "Registrar dispositivo"}
             </h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <InputField label="Marca y modelo" value={formData.marca_modelo} onChange={e => setFormData({...formData, marca_modelo: e.target.value})} required />
-              <InputField label="IMEI" value={formData.hash_imei} onChange={e => setFormData({...formData, hash_imei: e.target.value})} required />
-              <InputField label="Hardware ID" value={formData.hash_adn_hardware} onChange={e => setFormData({...formData, hash_adn_hardware: e.target.value})} required />
+              <InputField label="Marca y modelo" value={formData.marca_modelo} onChange={e => setFormData({ ...formData, marca_modelo: e.target.value })} required />
+              <InputField label="IMEI" value={formData.hash_imei} onChange={e => setFormData({ ...formData, hash_imei: e.target.value })} required />
+              <InputField label="Hardware ID" value={formData.hash_adn_hardware} onChange={e => setFormData({ ...formData, hash_adn_hardware: e.target.value })} required />
+
+              <div className="flex flex-col">
+                <label className="text-white/80 mb-1">Fotografía del equipo (para Huella IA)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => setImageFile(e.target.files[0])}
+                  className="w-full px-5 py-3 rounded-2xl border border-white/20 bg-[#1c1c2a] text-white focus:ring-2 focus:ring-cyan-500 outline-none transition file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/25 file:text-cyan-400 file:hover:bg-cyan-500/35 file:cursor-pointer"
+                />
+              </div>
 
               <div className="flex gap-6 mt-4 flex-wrap">
                 <button type="submit" className="flex-1 flex items-center justify-center gap-3 bg-cyan-500 hover:bg-cyan-600 text-white py-4 rounded-2xl shadow-lg text-xl font-semibold transition">
@@ -187,6 +241,46 @@ export default function DevicesPage() {
                 </button>
               </div>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* State Change Modal */}
+      {reportingDevice && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#1c1c2a] rounded-3xl p-8 w-full max-w-md shadow-2xl"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-white">Estado de Seguridad</h2>
+            <p className="text-white/60 mb-6 text-sm">
+              Selecciona el estado actual para tu dispositivo <strong>{reportingDevice.marca_modelo}</strong>. Esto afectará las búsquedas globales de inmediato.
+            </p>
+            <div className="flex flex-col gap-4">
+              {[
+                { val: "LIBRE", label: "Seguro (LIBRE)", desc: "El equipo está seguro en tu posesión.", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10" },
+                { val: "ROBADO", label: "Reportar como ROBADO", desc: "El equipo fue robado y quieres bloquearlo.", color: "text-red-400 border-red-500/30 bg-red-500/5 hover:bg-red-500/10" },
+                { val: "EXTRAVIADO", label: "Reportar como EXTRAVIADO", desc: "Perdiste el equipo y quieres alertar a quien lo encuentre.", color: "text-amber-400 border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10" }
+              ].map(opt => (
+                <button
+                  key={opt.val}
+                  type="button"
+                  onClick={() => onReportStateSubmit(reportingDevice.id_dispositivo, opt.val)}
+                  className={`w-full text-left p-4 rounded-2xl border transition ${opt.color} flex flex-col`}
+                >
+                  <span className="font-semibold text-lg">{opt.label}</span>
+                  <span className="text-xs text-white/55 mt-1">{opt.desc}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setReportingDevice(null)}
+              className="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white py-3.5 rounded-2xl font-semibold transition"
+            >
+              Cancelar
+            </button>
           </motion.div>
         </div>
       )}

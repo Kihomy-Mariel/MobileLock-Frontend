@@ -22,6 +22,11 @@ export const deviceService = {
         return res.data
     },
 
+    async reportState(id, estado) {
+        const res = await apiClient.patch(`/devices/report-state/${id}/`, { estado })
+        return res.data
+    },
+
     async remove(id) {
         const res = await apiClient.delete(`/devices/delete/${id}/`)
         return res.data
@@ -29,6 +34,11 @@ export const deviceService = {
 
     async verifyDevice(params) {
         const res = await apiClient.get("/devices/verify/", { params })
+        return res.data
+    },
+
+    async verifyDevicePhysical(data) {
+        const res = await apiClient.post("/devices/verify/", data)
         return res.data
     },
 

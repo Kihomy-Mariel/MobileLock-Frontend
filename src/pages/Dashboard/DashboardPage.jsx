@@ -1,4 +1,6 @@
+import { useState } from "react"
 import { motion } from "framer-motion"
+import toast, { Toaster } from "react-hot-toast"
 import {
 	Bell,
 	ShieldCheck,
@@ -67,7 +69,33 @@ export default function DashboardPage() {
 	const navigate = useNavigate()
 	const { logout, user } = useAuth()
 	const { theme, toggleTheme } = useTheme()
-	const { devices, loading } = useDevices()
+	const { devices, loading, reportDeviceState } = useDevices()
+
+	const [quickReportOpen, setQuickReportOpen] = useState(false)
+
+	const onQuickReportSubmit = async (id, statusVal) => {
+		try {
+			setQuickReportOpen(false)
+			await toast.promise(
+				reportDeviceState(id, statusVal),
+				{
+					loading: "Actualizando estado...",
+					success: "Estado de seguridad actualizado ✅",
+					error: "Error al actualizar estado"
+				}
+			)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const handleActionClick = (action) => {
+		if (action.title === "Reportar robo") {
+			setQuickReportOpen(true)
+		} else {
+			navigate(action.to)
+		}
+	}
 
 	const totalDevices = devices.length
 	const mainDevice = devices[0]
@@ -91,6 +119,7 @@ export default function DashboardPage() {
 
 	return (
 		<div className="min-h-screen flex flex-col relative overflow-hidden hero-bg">
+			<Toaster position="top-right" />
 
 			<div className="absolute inset-0 pointer-events-none">
 				<div className="absolute top-[-20%] left-[-20%] w-[70%] h-[60%] bg-primary/10 blur-3xl rounded-full" />
@@ -183,7 +212,7 @@ export default function DashboardPage() {
 					) : mainDevice ? (
 
 						<>
-							<div className="flex justify-between mb-4">
+							<div className="flex justify-between mb-4 flex-wrap gap-2">
 
 								<div className="flex gap-3">
 
@@ -203,9 +232,26 @@ export default function DashboardPage() {
 
 								</div>
 
-								<span className="px-3 py-1 rounded-full glass-light text-xs flex items-center gap-2">
-									<ShieldCheck size={14} className="text-primary" />
-									Seguro
+								<span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 ${mainDevice.estado === "LIBRE" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+										mainDevice.estado === "ROBADO" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
+											"bg-amber-500/10 text-amber-400 border border-amber-500/20"
+									}`}>
+									{mainDevice.estado === "LIBRE" ? (
+										<>
+											<ShieldCheck size={14} className="text-emerald-400" />
+											Seguro
+										</>
+									) : mainDevice.estado === "ROBADO" ? (
+										<>
+											<TriangleAlert size={14} className="text-red-400" />
+											Robado
+										</>
+									) : (
+										<>
+											<TriangleAlert size={14} className="text-amber-400" />
+											Extraviado
+										</>
+									)}
 								</span>
 
 							</div>
@@ -218,6 +264,16 @@ export default function DashboardPage() {
 
 								<div className="glass-light rounded-xl px-4 py-3">
 									Hardware ID: {mainDevice.hash_adn_hardware}
+								</div>
+
+								<div className="glass-light rounded-xl px-4 py-3 sm:col-span-2 flex items-center justify-between">
+									<span className="text-white/60">Huella Visual IA:</span>
+									<span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${mainDevice.hash_visual
+											? "bg-teal-500/10 text-teal-400 border border-teal-500/20"
+											: "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+										}`}>
+										{mainDevice.hash_visual ? "Registrada ✅" : "Sin Huella ⚠️"}
+									</span>
 								</div>
 
 							</div>
@@ -286,7 +342,7 @@ export default function DashboardPage() {
 							className="glass-light rounded-xl px-4 py-3 mb-2 cursor-pointer border border-transparent hover:border-primary/30 hover:shadow-glow transition-all"
 						>
 
-							<div className="flex justify-between">
+							<div className="flex justify-between items-center">
 
 								<div>
 
@@ -294,16 +350,24 @@ export default function DashboardPage() {
 										{device.marca_modelo}
 									</p>
 
-									<p className="text-sm text-muted-foreground">
-										IMEI: {device.hash_imei}
-									</p>
+									<div className="text-sm text-muted-foreground flex flex-wrap items-center gap-3 mt-0.5">
+										<span>IMEI: {device.hash_imei}</span>
+										<span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${device.hash_visual
+												? "bg-teal-500/10 text-teal-400 border border-teal-500/20"
+												: "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+											}`}>
+											{device.hash_visual ? "Huella registrada ✅" : "Sin huella ⚠️"}
+										</span>
+									</div>
 
 								</div>
 
-								<ShieldCheck
-									size={18}
-									className="text-primary"
-								/>
+								<span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${device.estado === "LIBRE" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" :
+										device.estado === "ROBADO" ? "bg-red-500/10 text-red-400 border border-red-500/25" :
+											"bg-amber-500/10 text-amber-400 border border-amber-500/25"
+									}`}>
+									{device.estado === "LIBRE" ? "Seguro" : device.estado === "ROBADO" ? "Robado" : "Extraviado"}
+								</span>
 
 							</div>
 
@@ -331,7 +395,7 @@ export default function DashboardPage() {
 
 								<motion.button
 									key={action.title}
-									onClick={() => navigate(action.to)}
+									onClick={() => handleActionClick(action)}
 									initial={{ opacity: 0, y: 18 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ delay: index * 0.1, duration: 0.4 }}
@@ -404,6 +468,83 @@ export default function DashboardPage() {
 				</section>
 
 			</main>
+
+			{/* Quick Report Modal */}
+			{quickReportOpen && (
+				<div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+					<motion.div
+						initial={{ scale: 0.9, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						className="glass rounded-3xl p-6 w-full max-w-lg shadow-2xl relative border border-white/10"
+					>
+						<h2 className="text-2xl font-bold mb-2 text-center text-foreground">
+							Reportar Robo o Extravío
+						</h2>
+						<p className="text-sm text-muted-foreground text-center mb-6">
+							Selecciona la acción para el equipo correspondiente:
+						</p>
+
+						{devices.length === 0 ? (
+							<p className="text-center text-muted-foreground my-8">
+								No tienes dispositivos registrados.
+							</p>
+						) : (
+							<div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+								{devices.map(device => (
+									<div
+										key={device.id_dispositivo}
+										className="glass-light rounded-2xl p-4 flex items-center justify-between border border-white/5"
+									>
+										<div>
+											<p className="font-semibold text-foreground">
+												{device.marca_modelo}
+											</p>
+											<p className={`text-xs font-bold mt-1 ${device.estado === "LIBRE" ? "text-emerald-400" :
+													device.estado === "ROBADO" ? "text-red-400" : "text-amber-400"
+												}`}>
+												{device.estado === "LIBRE" ? "Seguro" : device.estado === "ROBADO" ? "Robado" : "Extraviado"}
+											</p>
+										</div>
+
+										<div className="flex gap-2">
+											{device.estado === "LIBRE" ? (
+												<>
+													<button
+														onClick={() => onQuickReportSubmit(device.id_dispositivo, "ROBADO")}
+														className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/25 transition cursor-pointer"
+													>
+														ROBO
+													</button>
+													<button
+														onClick={() => onQuickReportSubmit(device.id_dispositivo, "EXTRAVIADO")}
+														className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/25 transition cursor-pointer"
+													>
+														PERDIDO
+													</button>
+												</>
+											) : (
+												<button
+													onClick={() => onQuickReportSubmit(device.id_dispositivo, "LIBRE")}
+													className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/25 transition cursor-pointer"
+												>
+													RECUPERAR
+												</button>
+											)}
+										</div>
+									</div>
+								))}
+							</div>
+						)}
+
+						<button
+							onClick={() => setQuickReportOpen(false)}
+							className="w-full mt-6 bg-white/10 hover:bg-white/15 text-foreground py-3 rounded-2xl font-semibold transition border border-white/5 cursor-pointer"
+						>
+							Cerrar
+						</button>
+					</motion.div>
+				</div>
+			)}
 
 		</div>
 	)
