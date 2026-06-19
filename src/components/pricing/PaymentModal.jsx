@@ -78,14 +78,14 @@ export default function PaymentModal({ isOpen, onClose, plan, onConfirm }) {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[#1c1c2a] rounded-3xl p-8 w-full max-w-md shadow-2xl border border-white/10"
+        className="glass rounded-3xl p-8 w-full max-w-md shadow-2xl border border-border"
       >
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Confirmar pago</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full glass-light flex items-center justify-center hover:bg-white/20 transition"
+            className="w-8 h-8 rounded-full glass-light flex items-center justify-center hover:bg-muted transition"
           >
             <X size={18} />
           </button>
@@ -181,7 +181,7 @@ export default function PaymentModal({ isOpen, onClose, plan, onConfirm }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 glass-light py-3 rounded-xl font-semibold hover:bg-white/10 transition"
+              className="flex-1 glass-light py-3 rounded-xl font-semibold hover:bg-muted transition border border-border/50"
             >
               Cancelar
             </button>

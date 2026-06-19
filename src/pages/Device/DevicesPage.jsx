@@ -19,12 +19,12 @@ import toast, { Toaster } from "react-hot-toast";
 // Componente InputField reutilizable
 const InputField = ({ label, value, onChange, required }) => (
   <div className="flex flex-col">
-    <label className="text-white/80 mb-1">{label}</label>
+    <label className="text-foreground/80 mb-1">{label}</label>
     <input
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full px-5 py-3 rounded-2xl border border-white/20 bg-[#1c1c2a] text-white focus:ring-2 focus:ring-cyan-500 outline-none transition"
+      className="w-full px-5 py-3 rounded-2xl border border-border bg-background text-foreground focus:ring-2 focus:ring-cyan-500 outline-none transition"
     />
   </div>
 );
@@ -111,21 +111,21 @@ export default function DevicesPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-10 pt-10 max-w-5xl mx-auto bg-gradient-to-b from-[#0a0a14] to-[#1a1a2f]">
+    <div className="min-h-screen pb-24 px-10 pt-10 max-w-5xl mx-auto text-foreground hero-bg">
       <Toaster position="top-right" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => navigate(-1)}
-          className="w-14 h-14 rounded-2xl bg-[#111122] flex items-center justify-center shadow-lg hover:scale-105 transition"
+          className="w-14 h-14 rounded-2xl glass-light border border-border/40 flex items-center justify-center shadow-lg hover:scale-105 transition"
         >
           <ArrowLeft size={24} className="text-cyan-400" />
         </button>
-        <h1 className="text-3xl font-bold text-white tracking-wide">Mis Dispositivos</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-wide">Mis Dispositivos</h1>
         <button
           onClick={() => navigate("/profile")}
-          className="w-14 h-14 rounded-2xl bg-[#111122] flex items-center justify-center shadow-lg hover:scale-105 transition"
+          className="w-14 h-14 rounded-2xl glass-light border border-border/40 flex items-center justify-center shadow-lg hover:scale-105 transition"
         >
           <User size={24} className="text-purple-400" />
         </button>
@@ -141,12 +141,12 @@ export default function DevicesPage() {
 
       {/* Devices List */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center text-white py-20 gap-4 text-xl">
+        <div className="flex flex-col items-center justify-center text-foreground py-20 gap-4 text-xl">
           <Loader2 className="animate-spin" size={36} />
           Cargando dispositivos...
         </div>
       ) : devices.length === 0 ? (
-        <p className="text-white/60 text-center py-20 text-2xl">No hay dispositivos registrados.</p>
+        <p className="text-foreground/60 text-center py-20 text-2xl">No hay dispositivos registrados.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {devices.map((device) => (
@@ -154,14 +154,14 @@ export default function DevicesPage() {
               key={device.id_dispositivo}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#111122] rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between shadow-xl hover:scale-105 transition"
+              className="glass rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between shadow-xl hover:scale-105 transition"
             >
               <div className="flex items-center gap-5 mb-4 md:mb-0">
                 <div className="w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
                   <Smartphone size={28} />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-white flex items-center gap-2 flex-wrap">
+                  <p className="text-xl font-bold text-foreground flex items-center gap-2 flex-wrap">
                     {device.marca_modelo}
                     <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${device.estado === "LIBRE" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
                         device.estado === "ROBADO" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
@@ -170,8 +170,8 @@ export default function DevicesPage() {
                       {device.estado === "LIBRE" ? "Seguro" : device.estado === "ROBADO" ? "Robado" : "Extraviado"}
                     </span>
                   </p>
-                  <p className="text-sm text-white/70">IMEI: {device.hash_imei}</p>
-                  <p className="text-sm text-white/70">Hardware: {device.hash_adn_hardware}</p>
+                  <p className="text-sm text-muted-foreground">IMEI: {device.hash_imei}</p>
+                  <p className="text-sm text-muted-foreground">Hardware: {device.hash_adn_hardware}</p>
                   <div className="mt-2 flex gap-2">
                     <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${device.hash_visual
                         ? "bg-teal-500/10 text-teal-400 border border-teal-500/20"
@@ -207,9 +207,9 @@ export default function DevicesPage() {
           <motion.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#1c1c2a] rounded-3xl p-8 w-full max-w-2xl shadow-2xl"
+            className="glass rounded-3xl p-8 w-full max-w-2xl shadow-2xl"
           >
-            <h2 className="text-2xl font-bold mb-6 text-white">
+            <h2 className="text-2xl font-bold mb-6 text-foreground">
               {editingDevice ? "Editar dispositivo" : "Registrar dispositivo"}
             </h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -218,12 +218,12 @@ export default function DevicesPage() {
               <InputField label="Hardware ID" value={formData.hash_adn_hardware} onChange={e => setFormData({ ...formData, hash_adn_hardware: e.target.value })} required />
 
               <div className="flex flex-col">
-                <label className="text-white/80 mb-1">Fotografía del equipo (para Huella IA)</label>
+                <label className="text-foreground/80 mb-1">Fotografía del equipo (para Huella IA)</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={e => setImageFile(e.target.files[0])}
-                  className="w-full px-5 py-3 rounded-2xl border border-white/20 bg-[#1c1c2a] text-white focus:ring-2 focus:ring-cyan-500 outline-none transition file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/25 file:text-cyan-400 file:hover:bg-cyan-500/35 file:cursor-pointer"
+                  className="w-full px-5 py-3 rounded-2xl border border-border bg-background text-foreground focus:ring-2 focus:ring-cyan-500 outline-none transition file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/25 file:text-cyan-400 file:hover:bg-cyan-500/35 file:cursor-pointer"
                 />
               </div>
 
@@ -235,7 +235,7 @@ export default function DevicesPage() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-4 rounded-2xl text-xl font-semibold transition"
+                  className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-4 rounded-2xl text-xl font-semibold transition border border-border/50"
                 >
                   Cancelar
                 </button>
@@ -251,10 +251,10 @@ export default function DevicesPage() {
           <motion.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#1c1c2a] rounded-3xl p-8 w-full max-w-md shadow-2xl"
+            className="glass rounded-3xl p-8 w-full max-w-md shadow-2xl"
           >
-            <h2 className="text-2xl font-bold mb-6 text-white">Estado de Seguridad</h2>
-            <p className="text-white/60 mb-6 text-sm">
+            <h2 className="text-2xl font-bold mb-6 text-foreground">Estado de Seguridad</h2>
+            <p className="text-muted-foreground mb-6 text-sm">
               Selecciona el estado actual para tu dispositivo <strong>{reportingDevice.marca_modelo}</strong>. Esto afectará las búsquedas globales de inmediato.
             </p>
             <div className="flex flex-col gap-4">
@@ -270,14 +270,14 @@ export default function DevicesPage() {
                   className={`w-full text-left p-4 rounded-2xl border transition ${opt.color} flex flex-col`}
                 >
                   <span className="font-semibold text-lg">{opt.label}</span>
-                  <span className="text-xs text-white/55 mt-1">{opt.desc}</span>
+                  <span className="text-xs text-muted-foreground/85 mt-1">{opt.desc}</span>
                 </button>
               ))}
             </div>
             <button
               type="button"
               onClick={() => setReportingDevice(null)}
-              className="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white py-3.5 rounded-2xl font-semibold transition"
+              className="w-full mt-6 bg-muted hover:bg-muted/80 text-foreground py-3.5 rounded-2xl font-semibold transition border border-border/50"
             >
               Cancelar
             </button>

@@ -180,14 +180,14 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-6 pt-10 max-w-4xl mx-auto bg-gradient-to-b from-[#0a0a14] to-[#14142b] text-white">
+    <div className="min-h-screen pb-24 px-6 pt-10 max-w-4xl mx-auto text-foreground">
       <Toaster position="top-right" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => navigate("/dashboard")}
-          className="w-12 h-12 rounded-2xl bg-[#1c1c2e] border border-white/10 flex items-center justify-center shadow-lg hover:scale-105 transition duration-200"
+          className="w-12 h-12 rounded-2xl glass-light border border-border flex items-center justify-center shadow-lg hover:scale-105 transition duration-200"
         >
           <ArrowLeft size={20} className="text-cyan-400" />
         </button>
@@ -196,14 +196,14 @@ export default function VerifyPage() {
         </h1>
         <button
           onClick={() => navigate("/history")}
-          className="px-4 py-2 rounded-2xl bg-[#1c1c2e]/60 border border-white/5 text-sm text-cyan-300 hover:bg-cyan-500/20 transition"
+          className="px-4 py-2 rounded-2xl glass border border-border text-sm text-primary hover:bg-primary/10 transition"
         >
           Ver Historial
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center p-1 bg-[#151526] rounded-2xl mb-8 max-w-md mx-auto border border-white/5 shadow-inner">
+      <div className="flex justify-center p-1 glass-light rounded-2xl mb-8 max-w-md mx-auto border border-border/50 shadow-inner">
         <button
           onClick={() => {
             setActiveTab("imei");
@@ -212,7 +212,7 @@ export default function VerifyPage() {
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition duration-200 ${activeTab === "imei"
               ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20"
-              : "text-white/60 hover:text-white"
+              : "text-foreground/60 hover:text-foreground"
             }`}
         >
           <Search size={18} />
@@ -225,7 +225,7 @@ export default function VerifyPage() {
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition duration-200 ${activeTab === "qr"
               ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20"
-              : "text-white/60 hover:text-white"
+              : "text-foreground/60 hover:text-foreground"
             }`}
         >
           <Scan size={18} />
@@ -234,13 +234,13 @@ export default function VerifyPage() {
       </div>
 
       {/* Input Panels */}
-      <div className="bg-[#111122]/90 border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden backdrop-blur-md">
+      <div className="glass rounded-3xl p-8 mb-8 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-cyan-500 to-purple-500" />
 
         {activeTab === "imei" && (
           <form onSubmit={handleSubmitImei} className="space-y-6 max-w-xl mx-auto">
-            <h3 className="text-xl font-semibold text-white/90">Consulta Legal por IMEI</h3>
-            <p className="text-sm text-white/50">
+            <h3 className="text-xl font-semibold text-foreground/90">Consulta Legal por IMEI</h3>
+            <p className="text-sm text-muted-foreground">
               Ingresa los 15 dígitos del IMEI de tu dispositivo para consultar de inmediato su titularidad y estado en Blockchain Polygon.
             </p>
             <div className="relative flex items-center">
@@ -249,7 +249,7 @@ export default function VerifyPage() {
                 placeholder="Ej. 358293049182748"
                 value={imei}
                 onChange={(e) => setImei(e.target.value)}
-                className="w-full pl-6 pr-14 py-4 rounded-2xl border border-white/20 bg-[#0d0d1b] text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-lg tracking-widest placeholder:tracking-normal transition"
+                className="w-full pl-6 pr-14 py-4 rounded-2xl border border-border bg-background text-foreground focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-lg tracking-widest placeholder:tracking-normal transition"
               />
               <button
                 type="submit"
@@ -264,8 +264,8 @@ export default function VerifyPage() {
 
         {activeTab === "qr" && (
           <div className="flex flex-col items-center justify-center space-y-6">
-            <h3 className="text-xl font-semibold text-white/90">Lector de ADN / QR</h3>
-            <p className="text-sm text-white/50 text-center max-w-lg">
+            <h3 className="text-xl font-semibold text-foreground/90">Lector de ADN / QR</h3>
+            <p className="text-sm text-muted-foreground text-center max-w-lg">
               Permite escanear el código QR de MobileLock en la parte posterior del equipo o en el certificado para comprobar su autenticidad física de forma instantánea.
             </p>
 
@@ -314,11 +314,11 @@ export default function VerifyPage() {
                     <h4 className="text-2xl font-bold text-white mb-2">
                       Dispositivo Libre de Reportes
                     </h4>
-                    <p className="text-white/70 text-sm">
+                    <p className="text-foreground/75 text-sm">
                       El celular consultado está registrado oficialmente y no cuenta con ningún reporte activo de pérdida o robo. Es seguro de adquirir y transferir.
                     </p>
                     {result.dispositivo && (
-                      <div className="mt-4 p-4 rounded-2xl bg-black/30 border border-white/5 text-xs text-white/80 space-y-1">
+                      <div className="mt-4 p-4 rounded-2xl glass-light text-xs text-foreground/80 space-y-1">
                         <p><strong>Marca y modelo:</strong> {result.dispositivo.marca_modelo}</p>
                         <p><strong>Hash de Hardware:</strong> {result.dispositivo.hash_adn_hardware}</p>
                         <p><strong>IMEI Cifrado:</strong> {result.dispositivo.hash_imei}</p>
@@ -343,11 +343,11 @@ export default function VerifyPage() {
                     <p className="text-red-400 text-sm font-semibold mb-2">
                       ¡Atención! Este dispositivo móvil fue reportado como robado o extraviado por su propietario original.
                     </p>
-                    <p className="text-white/70 text-xs">
+                    <p className="text-foreground/75 text-xs">
                       Comprar, vender o poseer celulares marcados en MobileLock AI constituye una infracción a las políticas de seguridad. El equipo está inutilizado digitalmente en el ecosistema.
                     </p>
                     {result.dispositivo && (
-                      <div className="mt-4 p-4 rounded-2xl bg-black/30 border border-white/5 text-xs text-white/80 space-y-1">
+                      <div className="mt-4 p-4 rounded-2xl glass-light text-xs text-foreground/80 space-y-1">
                         <p><strong>Marca y modelo:</strong> {result.dispositivo.marca_modelo}</p>
                         <p><strong>Código de Dispositivo:</strong> #{result.dispositivo.id_dispositivo}</p>
                       </div>
@@ -371,11 +371,11 @@ export default function VerifyPage() {
                     <p className="text-amber-400 text-sm font-semibold mb-2">
                       ¡Atención! Este dispositivo móvil fue reportado como extraviado por su propietario original.
                     </p>
-                    <p className="text-white/70 text-xs">
+                    <p className="text-foreground/75 text-xs">
                       Por favor, ponte en contacto con el propietario original o devuélvelo. El equipo se encuentra bajo monitoreo en el ecosistema.
                     </p>
                     {result.dispositivo && (
-                      <div className="mt-4 p-4 rounded-2xl bg-black/30 border border-white/5 text-xs text-white/80 space-y-1">
+                      <div className="mt-4 p-4 rounded-2xl glass-light text-xs text-foreground/80 space-y-1">
                         <p><strong>Marca y modelo:</strong> {result.dispositivo.marca_modelo}</p>
                         <p><strong>Código de Dispositivo:</strong> #{result.dispositivo.id_dispositivo}</p>
                       </div>
@@ -396,7 +396,7 @@ export default function VerifyPage() {
                     <h4 className="text-2xl font-bold text-white mb-2">
                       Dispositivo No Encontrado
                     </h4>
-                    <p className="text-white/70 text-sm">
+                    <p className="text-foreground/75 text-sm">
                       Este dispositivo no se encuentra en el registro central de MobileLock AI. Esto significa que la propiedad aún no ha sido blindada con nuestro ADN digital en la Blockchain.
                     </p>
                   </div>
@@ -410,7 +410,7 @@ export default function VerifyPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="bg-[#111122]/95 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-md mt-6"
+                className="glass rounded-3xl p-8 shadow-2xl relative overflow-hidden mt-6"
               >
                 <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-purple-500 to-cyan-500" />
 
@@ -419,23 +419,23 @@ export default function VerifyPage() {
                     <ShieldCheck size={22} className="animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Validar Autenticidad Física con IA</h3>
-                    <p className="text-xs text-white/50">EfficientNet-B0 Cosine Similarity (Umbral: 70%)</p>
+                    <h3 className="text-xl font-bold text-foreground">Validar Autenticidad Física con IA</h3>
+                    <p className="text-xs text-muted-foreground">EfficientNet-B0 Cosine Similarity (Umbral: 70%)</p>
                   </div>
                 </div>
 
                 {!physicalResult ? (
                   // Vista de Selección/Carga de Imagen
                   <div className="space-y-6">
-                    <p className="text-sm text-white/70">
+                    <p className="text-sm text-foreground/70">
                       Compara una foto en tiempo real del dispositivo físico contra la imagen oficial registrada en Blockchain para certificar que el hardware no haya sido clonado o alterado.
                     </p>
 
                     {physicalLoading ? (
                       // Cargador animado
-                      <div className="flex flex-col items-center justify-center py-12 bg-black/20 border border-white/5 rounded-2xl">
+                      <div className="flex flex-col items-center justify-center py-12 glass-light rounded-2xl">
                         <Loader2 className="w-12 h-12 text-purple-400 animate-spin mb-4" />
-                        <p className="text-sm font-semibold text-white/95">{loadingStepText}</p>
+                        <p className="text-sm font-semibold text-foreground/95">{loadingStepText}</p>
                         <p className="text-xs text-purple-400/60 mt-1 animate-pulse">Procesando vectores convolucionales...</p>
                       </div>
                     ) : (
@@ -443,7 +443,7 @@ export default function VerifyPage() {
                       <div className="space-y-4">
                         {physicalPreview ? (
                           <div className="flex flex-col items-center">
-                            <div className="relative w-full max-w-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
+                            <div className="relative w-full max-w-sm rounded-2xl overflow-hidden border border-border shadow-lg bg-card">
                               <img
                                 src={physicalPreview}
                                 alt="Vista previa captura física"
@@ -470,10 +470,10 @@ export default function VerifyPage() {
                             </div>
                           </div>
                         ) : (
-                          <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/20 hover:border-purple-500/50 rounded-2xl p-10 cursor-pointer bg-black/20 hover:bg-purple-500/5 transition duration-200">
+                          <label className="flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-purple-500/50 rounded-2xl p-10 cursor-pointer glass hover:bg-purple-500/5 transition duration-200">
                             <Camera className="w-12 h-12 text-purple-400 mb-3" />
-                            <span className="text-sm font-bold text-white/90">Tomar foto en vivo o subir archivo</span>
-                            <span className="text-xs text-white/40 mt-1.5">Activa la cámara del móvil o selecciona una imagen</span>
+                            <span className="text-sm font-bold text-foreground/90">Tomar foto en vivo o subir archivo</span>
+                            <span className="text-xs text-muted-foreground mt-1.5">Activa la cámara del móvil o selecciona una imagen</span>
                             <input
                               type="file"
                               accept="image/*"
@@ -498,7 +498,7 @@ export default function VerifyPage() {
                           <h4 className="text-lg font-bold text-emerald-400">
                             Hardware Auténtico Confirmado
                           </h4>
-                          <p className="text-sm text-white/80 mt-1">
+                          <p className="text-sm text-foreground/80 mt-1">
                             {physicalResult.mensaje}
                           </p>
                           <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full bg-emerald-500 text-black text-xs font-extrabold">
@@ -515,7 +515,7 @@ export default function VerifyPage() {
                           <h4 className="text-lg font-bold text-red-400">
                             Alerta de Clonación o Alteración Física
                           </h4>
-                          <p className="text-sm text-white/80 mt-1">
+                          <p className="text-sm text-foreground/80 mt-1">
                             {physicalResult.mensaje}
                           </p>
                           <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-extrabold">
@@ -528,8 +528,8 @@ export default function VerifyPage() {
                     {/* Comparación visual lado a lado */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                       <div className="space-y-2">
-                        <p className="text-xs font-bold uppercase tracking-wider text-white/60">Foto de Referencia Oficial</p>
-                        <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40 h-64 shadow-md">
+                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Foto de Referencia Oficial</p>
+                        <div className="rounded-2xl overflow-hidden border border-border bg-card h-64 shadow-md">
                           {physicalResult.url_imagen_referencia ? (
                             <img
                               src={physicalResult.url_imagen_referencia}
@@ -537,7 +537,7 @@ export default function VerifyPage() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-white/30">
+                            <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
                               Sin foto oficial registrada
                             </div>
                           )}
@@ -545,8 +545,8 @@ export default function VerifyPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-xs font-bold uppercase tracking-wider text-white/60">Foto de Verificación en Vivo</p>
-                        <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40 h-64 shadow-md">
+                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Foto de Verificación en Vivo</p>
+                        <div className="rounded-2xl overflow-hidden border border-border bg-card h-64 shadow-md">
                           <img
                             src={physicalPreview}
                             alt="Verificación en vivo"
@@ -563,7 +563,7 @@ export default function VerifyPage() {
                           setPhysicalFile(null);
                           setPhysicalPreview(null);
                         }}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition text-sm font-semibold"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary/15 border border-border text-foreground hover:bg-secondary/25 transition text-sm font-semibold"
                       >
                         <RefreshCw size={16} />
                         Nueva Validación Física

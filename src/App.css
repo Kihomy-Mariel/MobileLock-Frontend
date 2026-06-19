@@ -118,17 +118,19 @@ h1,h2,h3,h4 {
 ========================= */
 
 .glass{
-  background: rgba(15,23,42,0.65);
+  background: color-mix(in srgb, var(--card) 65%, transparent);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
   border-radius: var(--radius);
+  color: var(--foreground);
 }
 
 .glass-light{
-  background: rgba(15,23,42,0.45);
+  background: color-mix(in srgb, var(--card) 45%, transparent);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
   border-radius: var(--radius);
+  color: var(--foreground);
 }
 
 /* =========================

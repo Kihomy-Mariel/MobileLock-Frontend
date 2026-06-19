@@ -200,7 +200,7 @@ export function ProfilePage() {
                                 Correo electrónico
                             </label>
 
-                            <div className="mt-1 flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 text-sm opacity-80">
+                            <div className="mt-1 flex items-center gap-2 px-4 py-3 rounded-xl bg-muted text-sm opacity-80 border border-border/40">
                                 <Mail size={14}/>
                                 {profile.correo_electronico}
                             </div>
@@ -248,7 +248,7 @@ export function ProfilePage() {
 
 
                     {/* LOGOUT */}
-                    <div className="mt-10 border-t border-white/10 pt-6">
+                    <div className="mt-10 border-t border-border/50 pt-6">
 
                         <button
                             onClick={handleLogout}
@@ -296,8 +296,8 @@ function Field({ label, name, value, editing, onChange }) {
                 value={value}
                 disabled={!editing}
                 onChange={onChange}
-                className={`mt-1 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400 outline-none transition text-sm
-                ${!editing && "opacity-70 cursor-not-allowed"}`}
+                className={`mt-1 w-full px-4 py-3 rounded-xl bg-background border border-border focus:border-cyan-400 outline-none transition text-sm text-foreground
+                ${!editing && "opacity-75 cursor-not-allowed bg-muted/30"}`}
             />
         </div>
     )

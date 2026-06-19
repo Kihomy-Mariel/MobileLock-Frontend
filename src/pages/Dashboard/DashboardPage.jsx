@@ -150,7 +150,7 @@ export default function DashboardPage() {
 							</p>
 						</div>
 						<div className="flex items-center gap-3">
-							<button onClick={toggleTheme} className="w-11 h-11 rounded-xl glass-light flex items-center justify-center relative hover:scale-105 transition">
+							<button id="theme-toggle-btn" onClick={toggleTheme} className="w-11 h-11 rounded-xl glass-light flex items-center justify-center relative hover:scale-105 transition">
 								{theme === "dark" ? <Sun size={19} className="text-primary" /> : <Moon size={19} className="text-primary" />}
 							</button>
 
@@ -170,7 +170,7 @@ export default function DashboardPage() {
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end" className="w-56 glass border-border text-foreground">
 									<DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
-									<DropdownMenuSeparator className="bg-white/10" />
+									<DropdownMenuSeparator className="bg-border/50" />
 									<DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10" onClick={() => navigate("/profile")}>
 										<User className="mr-2 h-4 w-4" />
 										<span>Perfil</span>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
 										<Settings className="mr-2 h-4 w-4" />
 										<span>Configuración</span>
 									</DropdownMenuItem>
-									<DropdownMenuSeparator className="bg-white/10" />
+									<DropdownMenuSeparator className="bg-border/50" />
 									<DropdownMenuItem className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive" onClick={async () => {
 										await logout();
 										navigate("/");
@@ -267,7 +267,7 @@ export default function DashboardPage() {
 								</div>
 
 								<div className="glass-light rounded-xl px-4 py-3 sm:col-span-2 flex items-center justify-between">
-									<span className="text-white/60">Huella Visual IA:</span>
+									<span className="text-muted-foreground">Huella Visual IA:</span>
 									<span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${mainDevice.hash_visual
 											? "bg-teal-500/10 text-teal-400 border border-teal-500/20"
 											: "bg-orange-500/10 text-orange-400 border border-orange-500/20"
@@ -475,7 +475,7 @@ export default function DashboardPage() {
 					<motion.div
 						initial={{ scale: 0.9, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
-						className="glass rounded-3xl p-6 w-full max-w-lg shadow-2xl relative border border-white/10"
+						className="glass rounded-3xl p-6 w-full max-w-lg shadow-2xl relative border border-border/30"
 					>
 						<h2 className="text-2xl font-bold mb-2 text-center text-foreground">
 							Reportar Robo o Extravío
@@ -493,7 +493,7 @@ export default function DashboardPage() {
 								{devices.map(device => (
 									<div
 										key={device.id_dispositivo}
-										className="glass-light rounded-2xl p-4 flex items-center justify-between border border-white/5"
+										className="glass-light rounded-2xl p-4 flex items-center justify-between border border-border/20"
 									>
 										<div>
 											<p className="font-semibold text-foreground">
@@ -538,7 +538,7 @@ export default function DashboardPage() {
 
 						<button
 							onClick={() => setQuickReportOpen(false)}
-							className="w-full mt-6 bg-white/10 hover:bg-white/15 text-foreground py-3 rounded-2xl font-semibold transition border border-white/5 cursor-pointer"
+							className="w-full mt-6 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-2xl font-semibold transition border border-border/30 cursor-pointer"
 						>
 							Cerrar
 						</button>

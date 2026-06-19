@@ -50,14 +50,14 @@ export default function ScanHistoryPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-6 pt-10 max-w-4xl mx-auto bg-gradient-to-b from-[#0a0a14] to-[#14142b] text-white">
+    <div className="min-h-screen pb-24 px-6 pt-10 max-w-4xl mx-auto text-foreground">
       <Toaster position="top-right" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => navigate(-1)}
-          className="w-12 h-12 rounded-2xl bg-[#1c1c2e] border border-white/10 flex items-center justify-center shadow-lg hover:scale-105 transition duration-200"
+          className="w-12 h-12 rounded-2xl glass-light border border-border flex items-center justify-center shadow-lg hover:scale-105 transition duration-200"
         >
           <ArrowLeft size={20} className="text-cyan-400" />
         </button>
@@ -67,7 +67,7 @@ export default function ScanHistoryPage() {
         <button
           onClick={fetchHistory}
           disabled={loading}
-          className="w-12 h-12 rounded-2xl bg-[#1c1c2e] border border-white/10 flex items-center justify-center shadow-lg hover:scale-105 transition"
+          className="w-12 h-12 rounded-2xl glass-light border border-border flex items-center justify-center shadow-lg hover:scale-105 transition"
         >
           {loading ? (
             <Loader2 className="animate-spin text-cyan-400" size={20} />
@@ -77,21 +77,21 @@ export default function ScanHistoryPage() {
         </button>
       </div>
 
-      <p className="text-sm text-white/50 mb-8">
+      <p className="text-sm text-muted-foreground mb-8">
         Registro completo de las verificaciones locales de IMEI y códigos QR que has realizado.
       </p>
 
       {/* Main List Area */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-lg text-white/70">
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-lg text-muted-foreground">
           <Loader2 className="animate-spin text-cyan-400" size={40} />
           Cargando historial de escaneos...
         </div>
       ) : history.length === 0 ? (
-        <div className="bg-[#111122]/50 border border-white/5 rounded-3xl p-16 flex flex-col items-center justify-center text-center">
-          <Calendar size={64} className="text-white/10 mb-4" />
-          <h3 className="text-xl font-bold text-white/80 mb-2">Sin registros</h3>
-          <p className="text-sm text-white/40 max-w-sm">
+        <div className="glass border border-border/40 rounded-3xl p-16 flex flex-col items-center justify-center text-center">
+          <Calendar size={64} className="text-muted-foreground/30 mb-4" />
+          <h3 className="text-xl font-bold text-foreground/80 mb-2">Sin registros</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
             Aún no has realizado ninguna consulta o escaneo en MobileLock AI. Tus búsquedas se registrarán automáticamente aquí.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function ScanHistoryPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-[#111122]/75 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between shadow-lg hover:border-cyan-500/30 transition duration-200"
+              className="glass rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between shadow-lg hover:border-cyan-500/30 transition duration-200"
             >
               {/* Info lateral izquierda */}
               <div className="flex items-center gap-4 mb-4 md:mb-0">
@@ -111,10 +111,10 @@ export default function ScanHistoryPage() {
                   {scan.tipo_filtro === "IMEI" ? <Hash size={20} /> : <QrCode size={20} />}
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white/90">
+                  <h4 className="font-semibold text-foreground/90">
                     {scan.marca_modelo_detectado || "Dispositivo Desconocido"}
                   </h4>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-white/50">
+                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                     <span>{scan.tipo_filtro}: {scan.valor_consultado_ofuscado}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
