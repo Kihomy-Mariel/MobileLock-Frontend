@@ -45,5 +45,15 @@ export const deviceService = {
     async getScanHistory() {
         const res = await apiClient.get("/devices/scan-history/")
         return res.data
+    },
+
+    async getTraceability(id) {
+        const res = await apiClient.get(`/devices/traceability/${id}/`)
+        return res.data
+    },
+
+    async verifyPublicDevice(imei) {
+        const res = await apiClient.get("/devices/public-verify/", { params: { imei } })
+        return res.data
     }
 }

@@ -8,6 +8,7 @@ import { RegisterPage } from "../pages/Register/RegisterPage"
 import DevicesPage from "../pages/Device/DevicesPage"
 import VerifyPage from "../pages/Verify/VerifyPage"
 import ScanHistoryPage from "../pages/Device/ScanHistoryPage"
+import PublicVerifyPage from "../pages/PublicVerify/PublicVerifyPage"
 
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -23,6 +24,7 @@ export default function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
 
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/public-verify" element={<PublicVerifyPage />} />
 
       <Route
         path="/dashboard"

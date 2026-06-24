@@ -11,6 +11,9 @@ import {
   Check,
   User,
   ShieldAlert,
+  Search,
+  Filter,
+  History,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useDevices from "../../hooks/useDevices";
@@ -31,7 +34,7 @@ const InputField = ({ label, value, onChange, required }) => (
 
 export default function DevicesPage() {
   const navigate = useNavigate();
-  const { devices, loading, createDevice, updateDevice, reportDeviceState, deleteDevice } = useDevices();
+  const { devices, loading, createDevice, updateDevice, reportDeviceState, deleteDevice, getTraceability } = useDevices();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [reportingDevice, setReportingDevice] = useState(null);
@@ -39,6 +42,35 @@ export default function DevicesPage() {
   const [formData, setFormData] = useState({ marca_modelo: "", hash_imei: "", hash_adn_hardware: "" });
   const [actionLoading, setActionLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [historyDevice, setHistoryDevice] = useState(null);
+  const [deviceHistory, setDeviceHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const handleViewHistory = async (device) => {
+    setHistoryDevice(device);
+    setHistoryLoading(true);
+    setDeviceHistory([]);
+    try {
+      const data = await getTraceability(device.id_dispositivo);
+      setDeviceHistory(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al cargar historial");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const filteredDevices = devices.filter(d => {
+    const matchesSearch = 
+      d.marca_modelo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      d.hash_imei.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "ALL" || d.estado === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const onReportStateSubmit = async (id, statusVal) => {
     try {
@@ -139,6 +171,33 @@ export default function DevicesPage() {
         <Plus size={24} /> Registrar dispositivo
       </button>
 
+      {/* Search and Filter */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="Buscar por IMEI, marca o modelo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-border bg-background text-foreground focus:ring-2 focus:ring-cyan-500 outline-none transition"
+          />
+        </div>
+        <div className="relative w-full md:w-64">
+          <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-border bg-background text-foreground focus:ring-2 focus:ring-cyan-500 outline-none transition appearance-none cursor-pointer"
+          >
+            <option value="ALL">Todos los estados</option>
+            <option value="LIBRE">Seguro (Activo)</option>
+            <option value="ROBADO">Robado</option>
+            <option value="EXTRAVIADO">Extraviado</option>
+          </select>
+        </div>
+      </div>
+
       {/* Devices List */}
       {loading ? (
         <div className="flex flex-col items-center justify-center text-foreground py-20 gap-4 text-xl">
@@ -149,7 +208,7 @@ export default function DevicesPage() {
         <p className="text-foreground/60 text-center py-20 text-2xl">No hay dispositivos registrados.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {devices.map((device) => (
+          {filteredDevices.map((device) => (
             <motion.div
               key={device.id_dispositivo}
               initial={{ opacity: 0, y: 20 }}
@@ -188,6 +247,12 @@ export default function DevicesPage() {
                   className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl transition text-lg"
                 >
                   <Edit2 size={18} /> Editar
+                </button>
+                <button
+                  onClick={() => handleViewHistory(device)}
+                  className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-5 py-2 rounded-xl transition text-lg"
+                >
+                  <History size={18} /> Historial
                 </button>
                 <button
                   onClick={() => handleDelete(device)}
@@ -280,6 +345,74 @@ export default function DevicesPage() {
               className="w-full mt-6 bg-muted hover:bg-muted/80 text-foreground py-3.5 rounded-2xl font-semibold transition border border-border/50"
             >
               Cancelar
+            </button>
+          </motion.div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {historyDevice && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="glass rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[85vh] overflow-y-auto"
+          >
+            <h2 className="text-2xl font-bold mb-2 text-foreground">
+              Historial de Trazabilidad
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              {historyDevice.marca_modelo} (IMEI: {historyDevice.hash_imei})
+            </p>
+
+            {historyLoading ? (
+              <div className="flex flex-col items-center py-10">
+                <Loader2 className="animate-spin text-cyan-500 mb-4" size={32} />
+                <p>Cargando historial...</p>
+              </div>
+            ) : deviceHistory.length === 0 ? (
+              <p className="text-center text-muted-foreground py-10">
+                No hay cambios de estado registrados para este dispositivo.
+              </p>
+            ) : (
+              <div className="relative border-l-2 border-cyan-500/30 ml-4 pl-6 flex flex-col gap-8">
+                {deviceHistory.map((item, index) => (
+                  <div key={index} className="relative">
+                    <div className="absolute -left-[35px] top-1 w-4 h-4 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]"></div>
+                    <div className="bg-background/50 border border-border/50 rounded-2xl p-5 shadow-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-sm text-cyan-400 font-semibold">
+                          {new Date(item.fecha_cambio).toLocaleString()}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground line-through">
+                            {item.estado_anterior}
+                          </span>
+                          <span>→</span>
+                          <span className={`text-xs px-2 py-1 rounded font-bold ${
+                            item.estado_nuevo === "LIBRE" ? "bg-emerald-500/20 text-emerald-400" :
+                            item.estado_nuevo === "ROBADO" ? "bg-red-500/20 text-red-400" :
+                            "bg-amber-500/20 text-amber-400"
+                          }`}>
+                            {item.estado_nuevo}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-foreground text-sm">
+                        <span className="font-semibold">Motivo:</span> {item.motivo || "No especificado"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setHistoryDevice(null)}
+              className="w-full mt-8 bg-muted hover:bg-muted/80 text-foreground py-4 rounded-2xl text-lg font-semibold transition border border-border/50"
+            >
+              Cerrar
             </button>
           </motion.div>
         </div>

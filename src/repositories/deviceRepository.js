@@ -32,5 +32,13 @@ export const deviceRepository = {
 
     async getScanHistory() {
         return await deviceService.getScanHistory()
+    },
+
+    async getTraceability(id) {
+        return await deviceService.getTraceability(id)
+    },
+
+    async verifyPublicDevice(imei) {
+        return await deviceService.verifyPublicDevice(imei)
     }
 }

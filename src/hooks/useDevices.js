@@ -42,6 +42,10 @@ export default function useDevices() {
         setDevices(prev => prev.filter(d => d.id_dispositivo !== id_dispositivo))
     }
 
+    const getTraceability = async (id_dispositivo) => {
+        return await deviceRepository.getTraceability(id_dispositivo)
+    }
+
     useEffect(() => {
         fetchDevices()
     }, [])
@@ -52,6 +56,7 @@ export default function useDevices() {
         createDevice,
         updateDevice,
         reportDeviceState,
-        deleteDevice
+        deleteDevice,
+        getTraceability
     }
 }
